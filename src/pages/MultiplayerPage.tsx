@@ -1,7 +1,10 @@
 import { useState, useCallback } from 'react';
 import Icon from '@/components/ui/icon';
 import GameMap from '@/components/GameMap';
+import StreetView from '@/components/StreetView';
 import { LOCATIONS, calculateDistance, calculateScore } from '@/data/locations';
+
+const GMAPS_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
 
 interface Player {
   id: string;
@@ -322,12 +325,14 @@ export default function MultiplayerPage() {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
-        <div className="relative flex-1 md:flex-[3]">
-          <img src={currentLocation?.imageUrl} alt="Угадай" className="w-full object-cover" style={{ maxHeight: '45vh', minHeight: '200px' }} />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/50 pointer-events-none" />
+      <div className="flex-1 flex overflow-hidden">
+        {/* Street View */}
+        <div className="relative flex-1 min-w-0">
+          {currentLocation && (
+            <StreetView lat={currentLocation.lat} lng={currentLocation.lng} apiKey={GMAPS_KEY} />
+          )}
           {submitted && (
-            <div className="absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-sm">
+            <div className="absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-sm z-10">
               <div className="glass rounded-2xl px-8 py-6 text-center animate-scale-in">
                 <div className="text-4xl mb-2">⏳</div>
                 <p className="font-display font-bold text-lg text-gold">Ждём игроков...</p>
@@ -336,8 +341,8 @@ export default function MultiplayerPage() {
           )}
         </div>
 
-        <div className="flex flex-col flex-1 md:flex-[2]">
-          <div className="flex-1 min-h-[220px]">
+        <div className="flex flex-col border-l border-border/50" style={{ width: 320 }}>
+          <div className="flex-1 min-h-0">
             <GameMap onPinDrop={handlePinDrop} selectedPos={selectedPos} />
           </div>
           <div className="glass-strong border-t border-border/50 p-4">
